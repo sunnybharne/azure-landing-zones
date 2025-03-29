@@ -1,0 +1,44 @@
+name: RG Bicep Deploy
+
+on: 
+  push: 
+    branches: 
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
+          enable-AzPSSession: true
+
+      - name: rg bicep deploy
+        uses: azure/powershell@v2
+        with:
+          inlineScript: |
+            # Create simple deployment
+            # New-AzDeployment `
+            # -Name "rg-bicep" `
+            # -Location "Sweden Central" `
+            # -TemplateFile "rg/rg.bicep"
+            
+            # Create deployment stack at subscription scope
+            New-AzSubscriptionDeploymentStack `
+            -Name 'rg-bicep' `
+            -Location 'Sweden Central' `
+            -TemplateFile 'rg/rg.bicep' `
+            -ActionOnUnmanage DeleteAll `
+            -DenySettingsMode DenyWriteAndDelete
+
+          azPSVersion: "latest"

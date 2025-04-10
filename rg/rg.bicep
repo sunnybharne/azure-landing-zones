@@ -26,3 +26,4 @@ resource rgbiceptest1 'Microsoft.Resources/resourceGroups@2024-11-01' = {
     'owner': 'sunny bharne'
   }
 }
+

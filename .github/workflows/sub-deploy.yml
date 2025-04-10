@@ -1,4 +1,4 @@
-name: RG Bicep
+name: SUB Bicep
 
 on: 
   push: 
@@ -23,30 +23,30 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
           enable-AzPSSession: true
 
-      - name: rg bicep whatif
+      - name: SUB bicep whatif
         uses: azure/powershell@v2
         with:
           inlineScript: |
             # Create deployment stack at subscription scope
             New-AzSubscriptionDeploymentStack `
-            -Name 'rg-bicep' `
+            -Name 'SUB-bicep' `
             -Location 'Sweden Central' `
-            -TemplateFile 'rg/rg.bicep' `
+            -TemplateFile 'subscription/subscription.bicep' `
             -ActionOnUnmanage DeleteAll `
             -DenySettingsMode DenyWriteAndDelete `
             -WhatIf `
             -Force
           azPSVersion: "latest"
 
-      - name: rg bicep deploy
+      - name: SUB bicep deploy
         uses: azure/powershell@v2
         with:
           inlineScript: |
             # Create deployment stack at subscription scope
             New-AzSubscriptionDeploymentStack `
-            -Name 'rg-bicep' `
+            -Name 'SUB-bicep' `
             -Location 'Sweden Central' `
-            -TemplateFile 'rg/rg.bicep' `
+            -TemplateFile 'subscription/subscription.bicep' `
             -ActionOnUnmanage DeleteAll `
             -DenySettingsMode DenyWriteAndDelete `
             -Force

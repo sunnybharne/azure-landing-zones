@@ -39,6 +39,7 @@ jobs:
             -Location 'Sweden Central' `
             -TemplateFile 'rg/rg.bicep' `
             -ActionOnUnmanage DeleteAll `
-            -DenySettingsMode DenyWriteAndDelete
+            -DenySettingsMode DenyWriteAndDelete `
+            -Force
 
           azPSVersion: "latest"

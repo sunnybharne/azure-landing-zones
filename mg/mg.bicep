@@ -11,4 +11,5 @@ resource bicepmg 'Microsoft.Management/managementGroups@2023-04-01' = {
       }
   displayName: 'bicepmg'
   }
+
 }

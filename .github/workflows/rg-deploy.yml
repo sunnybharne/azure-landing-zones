@@ -23,16 +23,25 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
           enable-AzPSSession: true
 
+      - name: rg bicep whatif
+        uses: azure/powershell@v2
+        with:
+          inlineScript: |
+            # Create deployment stack at subscription scope
+            New-AzSubscriptionDeploymentStack `
+            -Name 'rg-bicep' `
+            -Location 'Sweden Central' `
+            -TemplateFile 'rg/rg.bicep' `
+            -ActionOnUnmanage DeleteAll `
+            -DenySettingsMode DenyWriteAndDelete `
+            -WhatIf `
+            -Force
+          azPSVersion: "latest"
+
       - name: rg bicep deploy
         uses: azure/powershell@v2
         with:
           inlineScript: |
-            # Create simple deployment
-            # New-AzDeployment `
-            # -Name "rg-bicep" `
-            # -Location "Sweden Central" `
-            # -TemplateFile "rg/rg.bicep"
-            
             # Create deployment stack at subscription scope
             New-AzSubscriptionDeploymentStack `
             -Name 'rg-bicep' `
@@ -41,5 +50,4 @@ jobs:
             -ActionOnUnmanage DeleteAll `
             -DenySettingsMode DenyWriteAndDelete `
             -Force
-
           azPSVersion: "latest"

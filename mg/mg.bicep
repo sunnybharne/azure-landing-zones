@@ -1,6 +1,6 @@
 targetScope = 'managementGroup'
 
-param rootmg string = 'root_bicep'
+param rootmg string = 'root_actions_bicep'
 
 param topLevelMgArray array = [
   'dev'
@@ -23,7 +23,7 @@ resource topLevel 'Microsoft.Management/managementGroups@2023-04-01' = [for mg i
     displayName: '${mg}'
     details: {
       parent: {
-        id: '/providers/Microsoft.Management/managementGroups/mg_root_bicep'
+        id: '/providers/Microsoft.Management/managementGroups/${rootmg}'
       }
     }
   }

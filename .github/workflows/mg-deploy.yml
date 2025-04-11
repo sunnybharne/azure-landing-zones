@@ -34,7 +34,7 @@ jobs:
             -Location 'Sweden Central' `
             -ActionOnUnmanage DeleteAll `
             -DenySettingsMode DenyWriteAndDelete `
-            -TemplateParameterFile './mg/mg.bicepparam' `
+            -TemplateParameterFile './mg/mgactions.bicepparam' `
             -Force `
             -WhatIf
           azPSVersion: "latest"
@@ -49,6 +49,8 @@ jobs:
             -Location 'Sweden Central' `
             -ActionOnUnmanage DeleteAll `
             -DenySettingsMode DenyWriteAndDelete `
-            -TemplateParameterFile './mg/mg.bicepparam' `
+            -TemplateParameterFile './mg/mgactions.bicepparam' `
             -Force
           azPSVersion: "latest"
+
+

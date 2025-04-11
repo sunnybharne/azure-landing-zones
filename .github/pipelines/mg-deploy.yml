@@ -8,8 +8,40 @@ trigger:
 pool: self-hosted
 
 steps:
-  - script: |
-      echo 'Hello, World'
-    displayName: 'Hello World'
 
+  - task: AzurePowerShell@5
+    inputs:
+      azureSubscription: 'azure-service-connection'
+      azurePowerShellVersion: 'LatestVersion'
+      ScriptType: 'InlineScript'
+      Inline: |
+        New-AzSubscriptionDeploymentStack `
+          -Name 'mg-bicep-whatif' `
+          -Location 'Sweden Central' `
+          -ActionOnUnmanage DeleteAll `
+          -DenySettingsMode DenyWriteAndDelete `
+          -TemplateParameterFile './mg/mgado.bicepparam' `
+          -Force `
+          -WhatIf
+      errorActionPreference: 'stop'
+      FailOnStandardError: false
+      pwsh: true
+    displayName: 'mg bicep whatif'
 
+  - task: AzurePowerShell@5
+    inputs:
+      azureSubscription: 'azure-service-connection'
+      azurePowerShellVersion: 'LatestVersion'
+      ScriptType: 'InlineScript'
+      Inline: |
+        New-AzSubscriptionDeploymentStack `
+          -Name 'mg-bicep-deploy' `
+          -Location 'Sweden Central' `
+          -ActionOnUnmanage DeleteAll `
+          -DenySettingsMode DenyWriteAndDelete `
+          -TemplateParameterFile './mg/mgado.bicepparam' `
+          -Force
+      errorActionPreference: 'stop' # 'stop' | 'continue' | 'silentlyContinue'.
+      FailOnStandardError: false
+      pwsh: true
+    displayName: 'mg bicep deploy'

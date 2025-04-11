@@ -1,10 +1,11 @@
+name: 'MG Bicep'
+
 trigger:
   branches:
     include:
       - main
 
-pool:
-  vmImage: 'ubuntu-latest'
+pool: self-hosted
 
 steps:
   - script: |

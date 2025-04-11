@@ -15,6 +15,17 @@ param midLevelMgArray array = [
   'sandbox'
 ]
 
+param landingZones array = [
+  'online'
+  'corp'
+]
+
+param platform array = [
+  'management'
+  'identity'
+  'connectivity'
+]
+
 resource root 'Microsoft.Management/managementGroups@2023-04-01' = {
   scope: tenant()
   name: rootmg
@@ -55,6 +66,7 @@ resource midDevLevel 'Microsoft.Management/managementGroups@2023-04-01' = [for m
     ]
  }]
 
+
 resource midTestLevel 'Microsoft.Management/managementGroups@2023-04-01' = [for mgmidlevel in midLevelMgArray : {
     scope: tenant()
     name: '${mgmidlevel}-test'
@@ -84,5 +96,53 @@ resource midProdLevel 'Microsoft.Management/managementGroups@2023-04-01' = [for 
     }
     dependsOn: [ 
       topLevel
+    ]
+ }]
+
+resource landingZoneDev 'Microsoft.Management/managementGroups@2023-04-01' = [for landingzonemg in landingZones : {
+    scope: tenant()
+    name: '${landingzonemg}-dev'
+    properties: {
+      displayName: '${landingzonemg}-dev'
+      details: {
+        parent: {
+          id: '/providers/Microsoft.Management/managementGroups/landingzone-dev'
+        }
+      }
+    }
+    dependsOn: [ 
+      midDevLevel
+    ]
+ }]
+
+resource landingZoneTest 'Microsoft.Management/managementGroups@2023-04-01' = [for landingzonemg in landingZones : {
+    scope: tenant()
+    name: '${landingzonemg}-test'
+    properties: {
+      displayName: '${landingzonemg}-test'
+      details: {
+        parent: {
+          id: '/providers/Microsoft.Management/managementGroups/landingzone-test'
+        }
+      }
+    }
+    dependsOn: [ 
+      midTestLevel
+    ]
+ }]
+
+resource landingZoneProd 'Microsoft.Management/managementGroups@2023-04-01' = [for landingzonemg in landingZones : {
+    scope: tenant()
+    name: '${landingzonemg}-prod'
+    properties: {
+      displayName: '${landingzonemg}-prod'
+      details: {
+        parent: {
+          id: '/providers/Microsoft.Management/managementGroups/landingzone-prod'
+        }
+      }
+    }
+    dependsOn: [ 
+      midProdLevel
     ]
  }]

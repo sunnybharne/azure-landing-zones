@@ -33,10 +33,10 @@ jobs:
             -Name 'mg-bicep' `
             -Location 'Sweden Central' `
             -ActionOnUnmanage DeleteAll `
-            -TemplateParameterFile './mg/mg.bicepparam' `  
             -DenySettingsMode DenyWriteAndDelete `
-            -WhatIf `
-            -Force
+            -TemplateParameterFile './mg/mg.bicepparam' `
+            -Force `
+            -WhatIf
           azPSVersion: "latest"
 
       - name: mg bicep deploy
@@ -47,9 +47,8 @@ jobs:
             New-AzSubscriptionDeploymentStack `
             -Name 'mg-bicep' `
             -Location 'Sweden Central' `
-            -TemplateFile 'mg/mg.bicep' `
             -ActionOnUnmanage DeleteAll `
             -DenySettingsMode DenyWriteAndDelete `
-            -TemplateParameterFile './mg/mg.bicepparam' `  
+            -TemplateParameterFile './mg/mg.bicepparam' `
             -Force
           azPSVersion: "latest"

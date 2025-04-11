@@ -1,6 +1,6 @@
 targetScope = 'managementGroup'
 
-param rootmg string = 'root_actions_bicep'
+param rootmg string
 
 param topLevelMgArray array = [
   'dev'

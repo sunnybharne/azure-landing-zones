@@ -50,5 +50,6 @@ jobs:
             -TemplateFile 'mg/mg.bicep' `
             -ActionOnUnmanage DeleteAll `
             -DenySettingsMode DenyWriteAndDelete `
+            -TemplateParaneterFile 'mg/mg.bicepparam' `  
             -Force
           azPSVersion: "latest"

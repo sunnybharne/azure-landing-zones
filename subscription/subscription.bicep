@@ -1,6 +1,16 @@
-targetScope = 'subscription'
+targetScope = 'managementGroup'
+
+param subscriptionName string
 
 resource symbolicname 'Microsoft.Subscription/aliases@2024-08-01-preview' = {
   scope: tenant()
-  name: 'platform-dev-01'
+  name: subscriptionName
+  properties: {
+    additionalProperties: {
+      managementGroupId: 'platform-prod'
+    }
+    billingScope: '/providers/Microsoft.Billing/billingAccounts/7ddbc21b-d605-48b1-be46-787a0eb84b1e'
+    displayName: subscriptionName
+    workload: 'production'
+  }
 }

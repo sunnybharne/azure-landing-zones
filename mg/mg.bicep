@@ -1,24 +1,26 @@
 targetScope = 'managementGroup'
 
-resource mg_root_bicep 'Microsoft.Management/managementGroups@2023-04-01' = {
-  scope: tenant()
-  name: 'mg_root_bicep'
-  properties: {
-    displayName: 'mg_root_bicep'
-  }
-}
+param rootmg string = 'root_bicep'
 
 param topLevelMgArray array = [
-  'dev',
+  'dev'
   'test'
   'prod'
 ]
 
+resource root 'Microsoft.Management/managementGroups@2023-04-01' = {
+  scope: tenant()
+  name: rootmg
+  properties: {
+    displayName: rootmg
+  }
+}
+
 resource topLevel 'Microsoft.Management/managementGroups@2023-04-01' = [for mg in topLevelMgArray : {
   scope: tenant()
   name: '${mg}'
-  displayName: '${mg}'
   properties: {
+    displayName: '${mg}'
     details: {
       parent: {
         id: '/providers/Microsoft.Management/managementGroups/mg_root_bicep'
@@ -26,8 +28,6 @@ resource topLevel 'Microsoft.Management/managementGroups@2023-04-01' = [for mg i
     }
   }
   dependsOn: [ 
-    mg_root_bicep
+    root
   ]
 }]
-
-

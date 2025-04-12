@@ -15,19 +15,17 @@ steps:
       azurePowerShellVersion: 'LatestVersion'
       ScriptType: 'InlineScript'
       Inline: |
-        New-AzManagementGroupDeploymentStack `
+        New-AzManagementGroupDeployment `
           -Name 'sub-bicep-whatif' `
           -ManagementGroupId 'platform-prod' `
           -Location 'Sweden Central' `
-          -ActionOnUnmanage DeleteAll `
-          -DenySettingsMode DenyWriteAndDelete `
           -TemplateParameterFile './subscription/subado.bicepparam' `
-          -Force `
           -WhatIf
       errorActionPreference: 'stop'
       FailOnStandardError: false
       pwsh: true
     displayName: 'suv bicep whatif'
+
 
   - task: AzurePowerShell@5
     inputs:
@@ -35,15 +33,13 @@ steps:
       azurePowerShellVersion: 'LatestVersion'
       ScriptType: 'InlineScript'
       Inline: |
-        New-AzManagementGroupDeploymentStack `
+        New-AzManagementGroupDeployment `
           -Name 'sub-bicep-deploy' `
           -ManagementGroupId 'platform-prod' `
           -Location 'Sweden Central' `
-          -ActionOnUnmanage DeleteAll `
-          -DenySettingsMode DenyWriteAndDelete `
           -TemplateParameterFile './subscription/subado.bicepparam' `
           -Force
-      errorActionPreference: 'stop' # 'stop' | 'continue' | 'silentlyContinue'.
+      errorActionPreference: 'stop'
       FailOnStandardError: false
       pwsh: true
     displayName: 'sub bicep deploy'

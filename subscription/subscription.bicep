@@ -1,20 +1,32 @@
 targetScope = 'managementGroup'
 
-param subscriptionName string
+@description('Billing profile used for subscription billing')
+param billingScope string
 
+@description('Display name for the subscription')
+param subscriptionDisplayName string
+
+@description('Workload type for the subscription')
+param subscriptionWorkload string
+
+@description('Tags to be applied to the subscription')
+param tags object
+
+@description('Management group to which the subscription will be assigned')
 param mgmtGroup string 
 
-resource symbolicname 'Microsoft.Subscription/aliases@2024-08-01-preview' = {
+resource alias 'Microsoft.Subscription/aliases@2024-08-01-preview' = {
   scope: tenant()
-  name: subscriptionName
+  name: subscriptionDisplayName
   properties: {
     additionalProperties: {
       managementGroupId: mgmtGroup
+      tags: tags  
     }
-    billingScope: '/providers/Microsoft.Billing/billingAccounts/7ddbc21b-d605-48b1-be46-787a0eb84b1e'
-    displayName: subscriptionName
-    workload: 'production'
+    billingScope: billingScope
+    displayName: subscriptionDisplayName
+    workload: subscriptionWorkload
   }
 }
 
-
+output subscriptionId string = alias.properties.subscriptionId

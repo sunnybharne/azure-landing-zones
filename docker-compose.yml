@@ -1,14 +1,33 @@
 version: "3.9"
 
 services:
-  ubuntu:
-    image: ubuntu:latest
-    container_name: ubuntu
-    tty: true
-    command: sleep infinity
+  ado-agent-01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ado-agent-01
+    environment:
+      - AZP_TOKEN
+      - AZP_ORG
+      - AZP_POOL
 
-  ubuntu2:
-    image: ubuntu:latest
-    container_name: ubuntu2
-    tty: true
-    command: sleep infinity
+  ado-agent-02:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ado-agent-02
+    environment:
+      - AZP_TOKEN
+      - AZP_ORG
+      - AZP_POOL
+
+  ado-agent-03:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ado-agent-03
+    environment:
+      - AZP_TOKEN
+      - AZP_ORG
+      - AZP_POOL
+

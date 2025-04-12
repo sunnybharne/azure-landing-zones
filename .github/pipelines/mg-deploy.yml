@@ -1,4 +1,4 @@
-name: 'MG Bicep'
+name: 'mg-bicep'
 
 trigger:
   branches:

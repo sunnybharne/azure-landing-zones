@@ -1,4 +1,4 @@
-name: 'Sub Bicep ado'
+name: 'sub-bicep-ado'
 
 trigger:
   branches:

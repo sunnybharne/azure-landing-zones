@@ -4,23 +4,19 @@ targetScope = 'managementGroup'
 param orgName string
 
 @description('The Id of the root management group.')
-param rootMgId string
+param tenantRootMgId string
 
-@description('The name of the level one management groups.')
-param levelOneMg array
-//param platformLevelMg array = [
-//  'management'
-//  'identity'
-//  'connectivity'
-//]
-//
-//param landingzonesLevelMg array = [
-//  'corp'
-//  'online'
-//]
-//
+@description('Child management groups of the root management group.')
+param rootChildMg array
+
+@description('Child management groups of the platform management group.')
+param platformChildMg array
+
+@description('Child management groups of the landingzones management group.') 
+param landingzonesChildMg array
+
 resource rootMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
-  name: rootMgId
+  name: tenantRootMgId
   scope: tenant()
 }
 
@@ -37,15 +33,62 @@ resource orgMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = {
   }
 }
 
-resource levelOneMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for levelOne in levelOneMg: {
+resource orgMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
+  name: orgMgDeployment.id
   scope: tenant()
-  name: levelOne
+}
+
+resource rootChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in rootChildMg: {
+  scope: tenant()
+  name: child
   properties: {
     details: {
       parent: {
-        id: orgMgDeployment.id
+        id: orgMg.id
       }
     }
-    displayName: levelOne
+    displayName: child
+  }
+}]
+
+resource platformMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
+  name: 'platform'
+  scope: tenant()
+  dependsOn: [
+    orgMgDeployment
+  ]
+}
+
+resource landingzonesMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
+  name: 'landingzones'
+  scope: tenant()
+  dependsOn: [
+    orgMgDeployment
+  ]
+}
+
+resource platformChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in platformChildMg: {
+  scope: tenant()
+  name: child
+  properties: {
+    details: {
+      parent: {
+        id: platformMg.id
+      }
+    }
+    displayName: child
+  }
+}]
+
+resource landingzonesChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in landingzonesChildMg: {
+  scope: tenant()
+  name: child
+  properties: {
+    details: {
+      parent: {
+        id: landingzonesMg.id
+      }
+    }
+    displayName: child
   }
 }]

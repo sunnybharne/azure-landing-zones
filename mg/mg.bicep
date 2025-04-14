@@ -7,13 +7,7 @@ param orgName string
 param tenantRootMgId string
 
 @description('Child management groups of the root management group.')
-param rootChildMg array
-
-@description('Child management groups of the platform management group.')
-param platformChildMg array
-
-@description('Child management groups of the landingzones management group.') 
-param landingzonesChildMg array
+param rootChildMg object
 
 resource rootMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
   name: tenantRootMgId
@@ -33,62 +27,41 @@ resource orgMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = {
   }
 }
 
-resource orgMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
-  name: orgMgDeployment.id
-  scope: tenant()
-}
-
-resource rootChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in rootChildMg: {
-  scope: tenant()
-  name: child
-  properties: {
-    details: {
-      parent: {
-        id: orgMg.id
+resource rootChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in items(rootChildMg): {
+    scope: tenant()
+    name: child.value.name
+    properties: {
+      details: {
+        parent: {
+          id: orgMgDeployment.id
+        }
       }
+      displayName: child.value.name
     }
-    displayName: child
-  }
 }]
 
-resource platformMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
-  name: 'platform'
-  scope: tenant()
-  dependsOn: [
-    orgMgDeployment
-  ]
-}
-
-resource landingzonesMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
-  name: 'landingzones'
-  scope: tenant()
-  dependsOn: [
-    orgMgDeployment
-  ]
-}
-
-resource platformChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in platformChildMg: {
-  scope: tenant()
-  name: child
-  properties: {
-    details: {
-      parent: {
-        id: platformMg.id
+resource platformChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in items(rootChildMg.platformMg.childMg): {
+    scope: tenant()
+    name: child.value.name
+    properties: {
+      details: {
+        parent: {
+          id: '/providers/Microsoft.Management/managementGroups/${rootChildMg.platformMg.name}'
+        }
       }
+      displayName: child.value.name
     }
-    displayName: child
-  }
 }]
 
-resource landingzonesChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in landingzonesChildMg: {
-  scope: tenant()
-  name: child
-  properties: {
-    details: {
-      parent: {
-        id: landingzonesMg.id
+resource landingzonesMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in items(rootChildMg.landingzonesMg.childMg): {
+    scope: tenant()
+    name: child.value.name
+    properties: {
+      details: {
+        parent: {
+          id: '/providers/Microsoft.Management/managementGroups/${rootChildMg.landingzonesMg.name}'
+        }
       }
+      displayName: child.value.name
     }
-    displayName: child
-  }
 }]

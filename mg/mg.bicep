@@ -9,59 +9,16 @@ param tenantRootMgId string
 @description('Child management groups of the root management group.')
 param rootChildMg object
 
-resource rootMg 'Microsoft.Management/managementGroups@2021-04-01' existing = {
-  name: tenantRootMgId
-  scope: tenant()
-}
+var canaryOrg = [
+  orgName
+  '${orgName}-canary'
+]
 
-resource orgMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = {
-  scope: tenant()
-  name: orgName
-  properties: {
-    details: {
-      parent: {
-        id: rootMg.id
-      }
-    }
-    displayName: orgName
+module mg '../modules/papliba.mg.structure.bicep' = [for mg in canaryOrg: {
+  name: 'mg-deployment'
+  params: {
+    orgName: orgName
+    tenantRootMgId: tenantRootMgId
+    rootChildMg: rootChildMg
   }
-}
-
-resource rootChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in items(rootChildMg): {
-    scope: tenant()
-    name: child.value.name
-    properties: {
-      details: {
-        parent: {
-          id: orgMgDeployment.id
-        }
-      }
-      displayName: child.value.name
-    }
-}]
-
-resource platformChildMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in items(rootChildMg.platformMg.childMg): {
-    scope: tenant()
-    name: child.value.name
-    properties: {
-      details: {
-        parent: {
-          id: '/providers/Microsoft.Management/managementGroups/${rootChildMg.platformMg.name}'
-        }
-      }
-      displayName: child.value.name
-    }
-}]
-
-resource landingzonesMgDeployment 'Microsoft.Management/managementGroups@2023-04-01' = [for child in items(rootChildMg.landingzonesMg.childMg): {
-    scope: tenant()
-    name: child.value.name
-    properties: {
-      details: {
-        parent: {
-          id: '/providers/Microsoft.Management/managementGroups/${rootChildMg.landingzonesMg.name}'
-        }
-      }
-      displayName: child.value.name
-    }
-}]
+} ]

@@ -14,11 +14,11 @@ var canaryOrg = [
   '${orgName}-canary'
 ]
 
-module mg '../modules/papliba.mg.structure.bicep' = [for mg in canaryOrg: {
+module mg '../modules/papliba.mg.structure.bicep' = {
   name: 'mg-deployment'
   params: {
     orgName: orgName
     tenantRootMgId: tenantRootMgId
     rootChildMg: rootChildMg
   }
-} ]
+}

@@ -1,4 +1,4 @@
-using './mg.bicep'
+using './main.bicep'
 
 @description('The name of the org management group.')
 param tenantRoot = 'c0f414ff-9e2d-4011-929c-fe21ed71b218'

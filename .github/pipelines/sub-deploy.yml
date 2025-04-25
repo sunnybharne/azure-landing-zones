@@ -11,7 +11,7 @@ steps:
 
   - task: AzurePowerShell@5
     inputs:
-      azureSubscription: 'azure-service-connection'
+      azureSubscription: 'papliba-mi-mg-01'
       azurePowerShellVersion: 'LatestVersion'
       ScriptType: 'InlineScript'
       Inline: |

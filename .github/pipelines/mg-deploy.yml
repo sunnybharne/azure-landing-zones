@@ -23,7 +23,7 @@ steps:
           -DenySettingsMode None `
           -TemplateParameterFile './mg/mgado.bicepparam' `
           -Force
-      errorActionPreference: 'stop' # 'stop' | 'continue' | 'silentlyContinue'.
+      errorActionPreference: 'stop'
       FailOnStandardError: false
       pwsh: true
     displayName: 'mg bicep deploy'

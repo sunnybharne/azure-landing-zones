@@ -66,4 +66,3 @@ USER agentuser
 
 # Run the startup script (which configures and runs the agent)
 ENTRYPOINT ["./start-agent.sh"]
-

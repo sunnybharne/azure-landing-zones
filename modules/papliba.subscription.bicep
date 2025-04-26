@@ -29,4 +29,3 @@ resource subscription 'Microsoft.Subscription/aliases@2024-08-01-preview' = {
     workload: workload
   }
 }
-DimaNastya

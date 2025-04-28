@@ -9,7 +9,6 @@ pool: self-hosted
 
 steps:
 
-
   - task: AzurePowerShell@5
     inputs:
       azureSubscription: 'papliba-mi-mg-01'

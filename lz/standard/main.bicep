@@ -26,3 +26,5 @@ module subscription '../modules/papliba.subscription.bicep' = {
     tags: tags
   }
 }
+
+

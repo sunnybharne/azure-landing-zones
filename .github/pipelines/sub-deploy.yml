@@ -8,7 +8,6 @@ trigger:
 pool: self-hosted
 
 steps:
-
   - task: AzurePowerShell@5
     inputs:
       azureSubscription: 'papliba-mi-mg-01'
@@ -21,7 +20,8 @@ steps:
           -Location 'Sweden Central' `
           -ActionOnUnmanage 'DetachAll' `
           -DenySettingsMode 'None' `
-          -TemplateParameterFile './subs/subsado.bicepparam'
+          -TemplateParameterFile './lz/standaard/main.bicepparam' `
+          -Force
       errorActionPreference: 'stop'
       FailOnStandardError: false
       pwsh: true

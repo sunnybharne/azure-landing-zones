@@ -16,7 +16,8 @@ param workload string
 param tags object
 
 @description('The name of the subscription to create')
-module subscription '../../modules/papliba.subscription.bicep' = {
+//module subscription '../../services/papliba.subscription.bicep' = {
+module subscription '../../services/papliba.subscription.bicep' = {
   name: subscriptionName
   params: {
     subscriptionName: subscriptionName

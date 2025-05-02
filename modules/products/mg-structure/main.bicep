@@ -15,7 +15,7 @@ param online string
 param decommissioned string 
 param sandbox string 
 
-module mgStructure '../modules/papliba.mg.structure.bicep' = {
+module mgStructure '../../services/papliba.mg.structure.bicep' = {
     name: 'mgStructure'
     params: {
       tenantRoot: tenantRoot
@@ -33,7 +33,7 @@ module mgStructure '../modules/papliba.mg.structure.bicep' = {
   }
 }
 
-module mgStructureCanary '../modules/papliba.mg.structure.bicep' = {
+module mgStructureCanary '../../services/papliba.mg.structure.bicep' = {
     name: 'mgStructureCanary'
     params: {
       tenantRoot: tenantRoot
@@ -50,6 +50,3 @@ module mgStructureCanary '../modules/papliba.mg.structure.bicep' = {
       suffix: '-canary'
   }
 }
-
-
-

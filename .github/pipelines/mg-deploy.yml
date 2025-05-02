@@ -21,7 +21,7 @@ steps:
           -Location 'Sweden Central' `
           -ActionOnUnmanage DeleteAll `
           -DenySettingsMode None `
-          -TemplateParameterFile './mg/mgado.bicepparam' `
+          -TemplateParameterFile 'modules/products/mg-structure/main.bicepparam' `
           -Force
       errorActionPreference: 'stop'
       FailOnStandardError: false

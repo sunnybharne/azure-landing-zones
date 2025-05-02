@@ -20,7 +20,7 @@ steps:
           -Location 'Sweden Central' `
           -ActionOnUnmanage 'DetachAll' `
           -DenySettingsMode 'None' `
-          -TemplateParameterFile './lz/standaard/main.bicepparam' `
+          -TemplateParameterFile './lz/standard/main.bicepparam' `
           -Force
       errorActionPreference: 'stop'
       FailOnStandardError: false

@@ -1,0 +1,54 @@
+{
+  "first_hirachy": {
+    "canary-plb": [
+      {
+        "id": "canary-plb-platform",
+        "display_name": "Platform - Canary"
+      },
+      {
+        "id": "canary-plb-landing-zones",
+        "display_name": "Landing Zones - Canary"
+      },
+      {
+        "id": "canary-plb-decommissioned",
+        "display_name": "Decommissioned - Canary"
+      },
+      {
+        "id": "canary-plb-sandbox",
+        "display_name": "Sandbox - Canary"
+      }
+    ]
+  },
+  "platform_hirarchy": {
+    "canary-plb-platform": [
+      {
+        "id": "canary-plb-platform-security",
+        "display_name": "Security - Canary"
+      },
+      {
+        "id": "canary-plb-platform-management",
+        "display_name": "Management - Canary"
+      },
+      {
+        "id": "canary-plb-platform-identity",
+        "display_name": "Identity - Canary"
+      },
+      {
+        "id": "canary-plb-platform-connectivity",
+        "display_name": "Connectivity - Canary"
+      }
+    ]
+  },
+  "landing_zone_hirarchy": {
+    "canary-plb-landing-zones": [
+      {
+        "id": "canary-plb-landing-zones-corp",
+        "display_name": "Corp - Canary"
+      },
+      {
+        "id": "canary-plb-landing-zones-online",
+        "display_name": "Online - Canary"
+      }
+    ]
+  }
+}

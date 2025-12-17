@@ -1,0 +1,54 @@
+{
+  "first_hirachy": {
+    "plb": [
+      {
+        "id": "plb-platform",
+        "display_name": "Platform"
+      },
+      {
+        "id": "plb-landing-zones",
+        "display_name": "Landing Zones"
+      },
+      {
+        "id": "plb-decommissioned",
+        "display_name": "Decommissioned"
+      },
+      {
+        "id": "plb-sandbox",
+        "display_name": "Sandbox"
+      }
+    ]
+  },
+  "platform_hirarchy": {
+    "plb-platform": [
+      {
+        "id": "plb-platform-security",
+        "display_name": "Security"
+      },
+      {
+        "id": "plb-platform-management",
+        "display_name": "Management"
+      },
+      {
+        "id": "plb-platform-identity",
+        "display_name": "Identity"
+      },
+      {
+        "id": "plb-platform-connectivity",
+        "display_name": "Connectivity"
+      }
+    ]
+  },
+  "landing_zone_hirarchy": {
+    "plb-landing-zones": [
+      {
+        "id": "plb-landing-zones-corp",
+        "display_name": "Corp"
+      },
+      {
+        "id": "plb-landing-zones-online",
+        "display_name": "Online"
+      }
+    ]
+  }
+}

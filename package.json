@@ -1,0 +1,14 @@
+{
+  "name": "azure-landing-zones",
+  "version": "1.0.0",
+  "description": "Azure Landing Zones Management Groups",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "@commitlint/cli": "^18.4.4",
+    "@commitlint/config-conventional": "^18.4.4"
+  }
+}
+

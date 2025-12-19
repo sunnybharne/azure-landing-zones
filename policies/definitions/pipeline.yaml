@@ -135,107 +135,107 @@ stages:
 # ============================================
 # Prod (PLB) Environment Stages
 # ============================================
-# - stage: PlanProd
-#   displayName: 'Plan - PLB (Prod)'
-#   dependsOn: DeployCanary
-#   condition: succeeded()
-#   jobs:
-#   - job: PlanProdManagementGroups
-#     displayName: 'Plan Management Groups - PLB'
-#     steps:
-#     - task: AzureCLI@2
-#       inputs:
-#         azureSubscription: $(serviceConnectionProd)
-#         scriptType: 'bash'
-#         scriptLocation: 'inlineScript'
-#         inlineScript: |
-#             az account set --subscription $(subscriptionIdProd)
-#             cd mgmt-group
-#
-#             # Get Azure context and set ARM variables for Azure provider authentication
-#             SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-#             TENANT_ID=$(az account show --query tenantId -o tsv)
-#             CLIENT_ID=$(az account show --query user.name -o tsv)
-#
-#             # Set ARM environment variables for Terraform Azure provider
-#             export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
-#             export ARM_TENANT_ID=$TENANT_ID
-#             export ARM_CLIENT_ID=$CLIENT_ID
-#             export ARM_USE_OIDC=true
-#
-#             # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
-#             unset AZURE_CONFIG_DIR
-#             
-#             echo "=========================================="
-#             echo "Terraform Plan - PLB Production Environment"
-#             echo "=========================================="
-#             echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
-#             echo "ARM_TENANT_ID: $ARM_TENANT_ID"
-#             echo "ARM_CLIENT_ID: $CLIENT_ID"
-#             echo "ARM_USE_OIDC: $ARM_USE_OIDC"
-#             echo "=========================================="
-#
-#             terraform init \
-#               -backend-config="resource_group_name=$(backendResourceGroupProd)" \
-#               -backend-config="storage_account_name=$(backendStorageAccountProd)" \
-#               -backend-config="container_name=$(backendContainerName)" \
-#               -backend-config="key=$(backendKeyPlb)" \
-#               -var-file=plb.tfvars.json
-#
-#             terraform plan -var-file=plb.tfvars.json -out=tfplan-plb
-#         workingDirectory: '$(System.DefaultWorkingDirectory)'
-#         failOnStandardError: true
-#         displayName: 'Terraform Plan - PLB'
-#
-# - stage: DeployProd
-#   displayName: 'Deploy - PLB (Prod)'
-#   dependsOn: PlanProd
-#   condition: succeeded()
-#   jobs:
-#   - job: DeployProdManagementGroups
-#     displayName: 'Deploy Management Groups - PLB'
-#     steps:
-#     - task: AzureCLI@2
-#       inputs:
-#         azureSubscription: $(serviceConnectionProd)
-#         scriptType: 'bash'
-#         scriptLocation: 'inlineScript'
-#         inlineScript: |
-#             az account set --subscription $(subscriptionIdProd)
-#             cd mgmt-group
-#
-#             # Get Azure context and set ARM variables for Azure provider authentication
-#             SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-#             TENANT_ID=$(az account show --query tenantId -o tsv)
-#             CLIENT_ID=$(az account show --query user.name -o tsv)
-#
-#             # Set ARM environment variables for Terraform Azure provider
-#             export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
-#             export ARM_TENANT_ID=$TENANT_ID
-#             export ARM_CLIENT_ID=$CLIENT_ID
-#             export ARM_USE_OIDC=true
-#
-#             # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
-#             unset AZURE_CONFIG_DIR
-#             
-#             echo "=========================================="
-#             echo "Terraform Apply - PLB Production Environment"
-#             echo "=========================================="
-#             echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
-#             echo "ARM_TENANT_ID: $ARM_TENANT_ID"
-#             echo "ARM_CLIENT_ID: $CLIENT_ID"
-#             echo "ARM_USE_OIDC: $ARM_USE_OIDC"
-#             echo "=========================================="
-#
-#             terraform init \
-#               -backend-config="resource_group_name=$(backendResourceGroupProd)" \
-#               -backend-config="storage_account_name=$(backendStorageAccountProd)" \
-#               -backend-config="container_name=$(backendContainerName)" \
-#               -backend-config="key=$(backendKeyPlb)" \
-#               -var-file=plb.tfvars.json
-#
-#             terraform apply -auto-approve -var-file=plb.tfvars.json -parallelism=50
-#         workingDirectory: '$(System.DefaultWorkingDirectory)'
-#         failOnStandardError: true
-#         displayName: 'Terraform Apply - PLB'
-#
+- stage: PlanProd
+  displayName: 'Plan - PLB (Prod)'
+  dependsOn: DeployCanary
+  condition: succeeded()
+  jobs:
+  - job: PlanProdManagementGroups
+    displayName: 'Plan Management Groups - PLB'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(serviceConnectionProd)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+            az account set --subscription $(subscriptionIdProd)
+            cd policies/definitions/plb
+
+            # Get Azure context and set ARM variables for Azure provider authentication
+            SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+            TENANT_ID=$(az account show --query tenantId -o tsv)
+            CLIENT_ID=$(az account show --query user.name -o tsv)
+
+            # Set ARM environment variables for Terraform Azure provider
+            export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
+            export ARM_TENANT_ID=$TENANT_ID
+            export ARM_CLIENT_ID=$CLIENT_ID
+            export ARM_USE_OIDC=true
+
+            # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
+            unset AZURE_CONFIG_DIR
+            
+            echo "=========================================="
+            echo "Terraform Plan - PLB Production Environment"
+            echo "=========================================="
+            echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
+            echo "ARM_TENANT_ID: $ARM_TENANT_ID"
+            echo "ARM_CLIENT_ID: $CLIENT_ID"
+            echo "ARM_USE_OIDC: $ARM_USE_OIDC"
+            echo "=========================================="
+
+            terraform init \
+              -backend-config="resource_group_name=$(backendResourceGroupProd)" \
+              -backend-config="storage_account_name=$(backendStorageAccountProd)" \
+              -backend-config="container_name=$(backendContainerName)" \
+              -backend-config="key=$(backendKeyPlb)" \
+              # -var-file=plb.tfvars.json
+
+            terraform plan -out=tfplan-plb
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        failOnStandardError: true
+        displayName: 'Terraform Plan - PLB'
+
+- stage: DeployProd
+  displayName: 'Deploy - PLB (Prod)'
+  dependsOn: PlanProd
+  condition: succeeded()
+  jobs:
+  - job: DeployProdManagementGroups
+    displayName: 'Deploy Management Groups - PLB'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(serviceConnectionProd)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+            az account set --subscription $(subscriptionIdProd)
+            cd policies/definitions/plb
+
+            # Get Azure context and set ARM variables for Azure provider authentication
+            SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+            TENANT_ID=$(az account show --query tenantId -o tsv)
+            CLIENT_ID=$(az account show --query user.name -o tsv)
+
+            # Set ARM environment variables for Terraform Azure provider
+            export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
+            export ARM_TENANT_ID=$TENANT_ID
+            export ARM_CLIENT_ID=$CLIENT_ID
+            export ARM_USE_OIDC=true
+
+            # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
+            unset AZURE_CONFIG_DIR
+            
+            echo "=========================================="
+            echo "Terraform Apply - PLB Production Environment"
+            echo "=========================================="
+            echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
+            echo "ARM_TENANT_ID: $ARM_TENANT_ID"
+            echo "ARM_CLIENT_ID: $CLIENT_ID"
+            echo "ARM_USE_OIDC: $ARM_USE_OIDC"
+            echo "=========================================="
+
+            terraform init \
+              -backend-config="resource_group_name=$(backendResourceGroupProd)" \
+              -backend-config="storage_account_name=$(backendStorageAccountProd)" \
+              -backend-config="container_name=$(backendContainerName)" \
+              -backend-config="key=$(backendKeyPlb)" \
+              # -var-file=plb.tfvars.json
+              
+            terraform apply -auto-approve -parallelism=50
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        failOnStandardError: true
+        displayName: 'Terraform Apply - PLB'
+

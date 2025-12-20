@@ -1,0 +1,26 @@
+{
+  "name": "MCFLocationAssignment",
+  "displayName": "MCF Allowed Locations Assignment",
+  "description": "Assigns the MCF Allowed Locations initiative to the management group.",
+  "metadata": {
+    "version": "1.0.0",
+    "category": "General",
+    "owner": "sunny.bharne@gmail.com",
+    "control": "MCF"
+  },
+  "location": "eastus",
+  "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/plb-canary/providers/Microsoft.Authorization/policySetDefinitions/MCFLocations",
+  "enforce": true,
+  "identity": {
+    "type": "SystemAssigned",
+    "identity_ids": []
+    },
+  "parameters": {},
+  "notScopes": [],
+  "nonComplianceMessage": [
+    {
+      "content": "Resources must be deployed to allowed locations only.",
+      "policyDefinitionReferenceId": null
+    }
+  ]
+}

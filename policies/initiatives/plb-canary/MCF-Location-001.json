@@ -1,0 +1,41 @@
+{
+  "name": "MCFLocations",
+  "policyType": "Custom",
+  "displayName": "MCF Allowed Locations Initiative",
+  "description": "Policy initiative to restrict resource creation to specified Azure regions for MCF control.",
+  "metadata": {
+    "version": "1.1.1",
+    "category": "General",
+    "owner": "sunny.bharne@gmail.com",
+    "control": "MCF"
+  },
+  "parameters": {
+    "allowedLocations": {
+      "type": "Array",
+      "metadata": {
+        "displayName": "Allowed Locations",
+        "description": "The list of locations allowed for resources."
+      },
+      "defaultValue": ["eastus"]
+    }
+  },
+  "policyDefinitionReference": [
+    {
+      "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/plb-canary/providers/Microsoft.Authorization/policyDefinitions/AllowedLocation",
+      "parameterValues": {
+        "allowedLocations": {
+          "value": "[parameters('allowedLocations')]"
+        }
+      },
+      "referenceId": "AllowedLocationRef"
+    }
+  ],
+  "policyDefinitionGroup": [
+    {
+      "name": "LocationRestrictions",
+      "displayName": "Location Restrictions",
+      "category": "General",
+      "description": "Policies that restrict resource locations"
+    }
+  ]
+}

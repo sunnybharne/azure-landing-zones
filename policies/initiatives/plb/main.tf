@@ -35,20 +35,38 @@ locals {
   files_maps = { for x in local.files : "${basename(dirname("${path.cwd}/${x}"))}/${jsondecode("${file(x)}").name}-${jsondecode("${file(x)}").metadata.version}" => jsondecode(file(x)) }
 }
 
-resource "azurerm_policy_definition" "definition" {
+resource "azurerm_management_group_policy_set_definition" "initiative" {
   for_each            = local.files_maps
   name                = each.value.name
-  policy_type         = each.value.policyType
-  mode                = each.value.mode
-  display_name        = each.value.displayName
   description         = each.value.description
   metadata            = jsonencode(each.value.metadata)
+  policy_type         = each.value.policyType
+  display_name        = each.value.displayName
   parameters          = jsonencode(each.value.parameters)
-  policy_rule         = jsonencode(each.value.policyRule)
   management_group_id = "/providers/Microsoft.Management/managementGroups/${split("/", each.key)[0]}"
+
+  dynamic "policy_definition_reference" {
+    for_each = each.value.policyDefinitionReference != null ? each.value.policyDefinitionReference : []
+    content {
+      policy_definition_id = policy_definition_reference.value.policyDefinitionId
+      parameter_values     = try(policy_definition_reference.value.parameterValues, null) != null ? jsonencode(policy_definition_reference.value.parameterValues) : null
+      reference_id         = try(policy_definition_reference.value.referenceId, null)
+    }
+  }
+
+  dynamic "policy_definition_group" {
+    for_each = each.value.policyDefinitionGroup != null ? each.value.policyDefinitionGroup : []
+    content {
+      name                            = policy_definition_group.value.name
+      display_name                    = try(policy_definition_group.value.displayName, null)
+      category                        = try(policy_definition_group.value.category, null)
+      description                     = try(policy_definition_group.value.description, null)
+      additional_metadata_resource_id = try(policy_definition_group.value.additionalMetadataResourceId, null)
+    }
+  }
 }
 
-output "policy_definitions" {
-  description = "Map of all policy definitions created."
-  value       = azurerm_policy_definition.definition
+output "policy_initiatives" {
+  description = "Map of all policy initiatives created."
+  value       = azurerm_management_group_policy_set_definition.initiative
 }

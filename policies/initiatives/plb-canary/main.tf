@@ -46,22 +46,22 @@ resource "azurerm_management_group_policy_set_definition" "initiative" {
   management_group_id = "/providers/Microsoft.Management/managementGroups/${split("/", each.key)[0]}"
 
   dynamic "policy_definition_reference" {
-    for_each = each.value.policy_definition_reference != null ? each.value.policy_definition_reference : []
+    for_each = each.value.policyDefinitionReference != null ? each.value.policyDefinitionReference : []
     content {
       policy_definition_id = policy_definition_reference.value.policyDefinitionId
-      parameter_values     = policy_definition_reference.value.parameterValues != null ? jsonencode(policy_definition_reference.value.parameterValues) : null
-      reference_id         = policy_definition_reference.value.referenceId != null ? policy_definition_reference.value.referenceId : null
+      parameter_values     = try(policy_definition_reference.value.parameterValues, null) != null ? jsonencode(policy_definition_reference.value.parameterValues) : null
+      reference_id         = try(policy_definition_reference.value.referenceId, null)
     }
   }
 
   dynamic "policy_definition_group" {
-    for_each = each.value.policy_definition_group != null ? each.value.policy_definition_group : []
+    for_each = each.value.policyDefinitionGroup != null ? each.value.policyDefinitionGroup : []
     content {
       name                            = policy_definition_group.value.name
-      display_name                    = policy_definition_group.value.displayName != null ? policy_definition_group.value.displayName : null
-      category                        = policy_definition_group.value.category != null ? policy_definition_group.value.category : null
-      description                     = policy_definition_group.value.description != null ? policy_definition_group.value.description : null
-      additional_metadata_resource_id = policy_definition_group.value.additionalMetadataResourceId != null ? policy_definition_group.value.additionalMetadataResourceId : null
+      display_name                    = try(policy_definition_group.value.displayName, null)
+      category                        = try(policy_definition_group.value.category, null)
+      description                     = try(policy_definition_group.value.description, null)
+      additional_metadata_resource_id = try(policy_definition_group.value.additionalMetadataResourceId, null)
     }
   }
 }

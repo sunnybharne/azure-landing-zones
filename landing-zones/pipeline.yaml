@@ -15,7 +15,8 @@ variables:
   # Backend configuration for PLB (Prod)
   backendResourceGroupProd: 'rg-platform-eus-prod-001'
   backendStorageAccountProd: 'stplatformeusprod001'
-  backendKeyPlb: 'lz.plb.tfstate'
+  backendSubscriptionKeyPlb: 'sub.plb.tfstate'
+  backendLzResourcesKeyPlb: 'lz.plb.tfstate'
 
 pool: 'default'
 
@@ -63,14 +64,14 @@ stages:
               -backend-config="resource_group_name=$(backendResourceGroupProd)" \
               -backend-config="storage_account_name=$(backendStorageAccountProd)" \
               -backend-config="container_name=$(backendContainerName)" \
-              -backend-config="key=$(backendKeyPlb)"
+              -backend-config="key=$(backendSubscriptionKeyPlb)"
             
-            # terraform force-unlock -force 13cc1e02-db7e-bafd-35a7-46fd8b817a01
+            # terraform force-unlock -force 3db75982-914d-2db9-9501-dfc16636ee93
 
             terraform plan -out=tfplan-plb
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         failOnStandardError: true
-        displayName: 'Subscription Plan'
+      displayName: 'Subscription Plan'
 
     - task: AzureCLI@2
       inputs:
@@ -105,120 +106,143 @@ stages:
             echo "ARM_USE_OIDC: $ARM_USE_OIDC"
             echo "=========================================="
 
+            for file in $(find ../../plb -type f -name "*.json"); do
+
+              subscriptionId=$(jq -r '.subscriptionId' "$file")
+              location=$(jq -r '.location' "$file")
+              resourceGroupName=$(jq -r '.resourceGroupName' "$file")
+              tags=$(jq -r '.tags' "$file")
+
+              terraform init \
+                -backend-config="resource_group_name=$(backendResourceGroupProd)" \
+                -backend-config="storage_account_name=$(backendStorageAccountProd)" \
+                -backend-config="container_name=$(backendContainerName)" \
+                -backend-config="key=$subscriptionId"
+
+              echo "Subscription ID from file: $subscriptionId"
+              az account set --subscription $subscriptionId
+
+
+              sleep 30
+
+              # terraform force-unlock -force 8eadec9d-91f2-eef5-57d6-aad1d7b92322
+              terraform import 'module.subscription["alias-../../plb/platform-lz/plb-platform-prod-001.tfvar.json"].azurerm_subscription.subscription' '/providers/Microsoft.Subscription/aliases/plb-platform-prod-001'
+              
+                
+              terraform plan -out="tfplan-$(basename "$file" .json)" -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags"
+            done
+
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        failOnStandardError: true
+      displayName: 'Landing Zones Plan'
+
+- stage: DeployProd
+  displayName: 'Deploy - PLB (Prod)'
+  dependsOn: PlanProd
+  condition: succeeded()
+  jobs:
+  - job: DeployProdLandingZones
+    displayName: 'Deploy Landing Zones - PLB'
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(serviceConnectionProd)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+            set -e
+            az account set --subscription $(subscriptionIdProd)
+            cd landing-zones/modules/sub-create
+
+            # Get Azure context and set ARM variables for Azure provider authentication
+            SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+            TENANT_ID=$(az account show --query tenantId -o tsv)
+            CLIENT_ID=$(az account show --query user.name -o tsv)
+
+            # Set ARM environment variables for Terraform Azure provider
+            export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
+            export ARM_TENANT_ID=$TENANT_ID
+            export ARM_CLIENT_ID=$CLIENT_ID
+            export ARM_USE_OIDC=true
+
+            # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
+            unset AZURE_CONFIG_DIR
+            
+            echo "=========================================="
+            echo "Terraform Apply - PLB Production Environment"
+            echo "=========================================="
+            echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
+            echo "ARM_TENANT_ID: $ARM_TENANT_ID"
+            echo "ARM_CLIENT_ID: $CLIENT_ID"
+            echo "ARM_USE_OIDC: $ARM_USE_OIDC"
+            echo "=========================================="
+
             terraform init \
               -backend-config="resource_group_name=$(backendResourceGroupProd)" \
               -backend-config="storage_account_name=$(backendStorageAccountProd)" \
               -backend-config="container_name=$(backendContainerName)" \
-              -backend-config="key=$(backendKeyPlb)"
-
-            for file in $(find . -type f -name "*.json"); do
-              echo "$file"
-              json_content=$(cat "$file")
-              echo "$json_content"
-            done
-
-            # terraform force-unlock -force 13cc1e02-db7e-bafd-35a7-46fd8b817a01
-
-            # terraform plan -out=tfplan-plb
+              -backend-config="key=$(backendSubscriptionKeyPlb)"
+            
+            terraform apply -auto-approve
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         failOnStandardError: true
-        displayName: 'Landing Zones Plan'
+      displayName: 'Subscription Apply'
 
-    # - task: AzureCLI@2
-    #   inputs:
-    #     azureSubscription: $(serviceConnectionProd)
-    #     scriptType: 'bash'
-    #     scriptLocation: 'inlineScript'
-    #     inlineScript: |
-    #         set -e
-    #         az account set --subscription $(subscriptionIdProd)
-    #         cd landing-zones
-    #
-    #         # Get Azure context and set ARM variables for Azure provider authentication
-    #         SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-    #         TENANT_ID=$(az account show --query tenantId -o tsv)
-    #         CLIENT_ID=$(az account show --query user.name -o tsv)
-    #
-    #         # Set ARM environment variables for Terraform Azure provider
-    #         export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
-    #         export ARM_TENANT_ID=$TENANT_ID
-    #         export ARM_CLIENT_ID=$CLIENT_ID
-    #         export ARM_USE_OIDC=true
-    #
-    #         # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
-    #         unset AZURE_CONFIG_DIR
-    #         
-    #         echo "=========================================="
-    #         echo "Terraform Plan - PLB Production Environment"
-    #         echo "=========================================="
-    #         echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
-    #         echo "ARM_TENANT_ID: $ARM_TENANT_ID"
-    #         echo "ARM_CLIENT_ID: $CLIENT_ID"
-    #         echo "ARM_USE_OIDC: $ARM_USE_OIDC"
-    #         echo "=========================================="
-    #
-    #         terraform init \
-    #           -backend-config="resource_group_name=$(backendResourceGroupProd)" \
-    #           -backend-config="storage_account_name=$(backendStorageAccountProd)" \
-    #           -backend-config="container_name=$(backendContainerName)" \
-    #           -backend-config="key=$(backendKeyPlb)"
-    #         
-    #         # terraform force-unlock -force 13cc1e02-db7e-bafd-35a7-46fd8b817a01
-    #
-    #         terraform plan -out=tfplan-plb
-    #     workingDirectory: '$(System.DefaultWorkingDirectory)'
-    #     failOnStandardError: true
-    #     displayName: 'lz resource Plan - PLB'
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(serviceConnectionProd)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+            set -e
+            az account set --subscription $(subscriptionIdProd)
+            cd landing-zones/modules/lz-resources
 
+            # Get Azure context and set ARM variables for Azure provider authentication
+            SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+            TENANT_ID=$(az account show --query tenantId -o tsv)
+            CLIENT_ID=$(az account show --query user.name -o tsv)
 
-# - stage: DeployProd
-#   displayName: 'Deploy - PLB (Prod)'
-#   dependsOn: PlanProd
-#   condition: succeeded()
-#   jobs:
-#   - job: DeployProdLandingZones
-#     displayName: 'Deploy Landing Zones - PLB'
-#     steps:
-#     - task: AzureCLI@2
-#       inputs:
-#         azureSubscription: $(serviceConnectionProd)
-#         scriptType: 'bash'
-#         scriptLocation: 'inlineScript'
-#         inlineScript: |
-#             set -e
-#             az account set --subscription $(subscriptionIdProd)
-#             cd landing-zones
-#
-#             # Get Azure context and set ARM variables for Azure provider authentication
-#             SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-#             TENANT_ID=$(az account show --query tenantId -o tsv)
-#             CLIENT_ID=$(az account show --query user.name -o tsv)
-#
-#             # Set ARM environment variables for Terraform Azure provider
-#             export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
-#             export ARM_TENANT_ID=$TENANT_ID
-#             export ARM_CLIENT_ID=$CLIENT_ID
-#             export ARM_USE_OIDC=true
-#
-#             # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
-#             unset AZURE_CONFIG_DIR
-#             
-#             echo "=========================================="
-#             echo "Terraform Apply - PLB Production Environment"
-#             echo "=========================================="
-#             echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
-#             echo "ARM_TENANT_ID: $ARM_TENANT_ID"
-#             echo "ARM_CLIENT_ID: $CLIENT_ID"
-#             echo "ARM_USE_OIDC: $ARM_USE_OIDC"
-#             echo "=========================================="
-#
-#             terraform init \
-#               -backend-config="resource_group_name=$(backendResourceGroupProd)" \
-#               -backend-config="storage_account_name=$(backendStorageAccountProd)" \
-#               -backend-config="container_name=$(backendContainerName)" \
-#               -backend-config="key=$(backendKeyPlb)"
-#               
-#             terraform apply -auto-approve -parallelism=50
-#         workingDirectory: '$(System.DefaultWorkingDirectory)'
-#         failOnStandardError: true
-#         displayName: 'Terraform Apply - PLB'
+            # Set ARM environment variables for Terraform Azure provider
+            export ARM_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
+            export ARM_TENANT_ID=$TENANT_ID
+            export ARM_CLIENT_ID=$CLIENT_ID
+            export ARM_USE_OIDC=true
+
+            # Unset Azure CLI config to force Terraform to use ARM variables instead of Azure CLI
+            unset AZURE_CONFIG_DIR
+
+            echo "=========================================="
+            echo "Terraform Apply - PLB Production Environment"
+            echo "=========================================="
+            echo "ARM_SUBSCRIPTION_ID: $ARM_SUBSCRIPTION_ID"
+            echo "ARM_TENANT_ID: $ARM_TENANT_ID"
+            echo "ARM_CLIENT_ID: $CLIENT_ID"
+            echo "ARM_USE_OIDC: $ARM_USE_OIDC"
+            echo "=========================================="
+
+            for file in $(find ../../plb -type f -name "*.json"); do
+
+              subscriptionId=$(jq -r '.subscriptionId' "$file")
+              location=$(jq -r '.location' "$file")
+              resourceGroupName=$(jq -r '.resourceGroupName' "$file")
+              tags=$(jq -r '.tags' "$file")
+              # planFile="tfplan-$(basename "$file" .json)"
+
+              terraform init \
+                -backend-config="resource_group_name=$(backendResourceGroupProd)" \
+                -backend-config="storage_account_name=$(backendStorageAccountProd)" \
+                -backend-config="container_name=$(backendContainerName)" \
+                -backend-config="key=$subscriptionId"
+
+              echo "Applying plan for subscription: $subscriptionId"
+              az account set --subscription $subscriptionId
+
+              sleep 30
+
+              terraform apply -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags"
+            done
+
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        failOnStandardError: true
+      displayName: 'Landing Zones Apply'

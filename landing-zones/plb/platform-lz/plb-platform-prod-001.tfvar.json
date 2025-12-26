@@ -3,6 +3,8 @@
   "subscriptionId": "e8d0f9e9-2ea9-4973-99d6-f464cdb35bf3",
   "managementGroupId": "plb-platform-management",
   "workload": "Production",
+  "location": "eastus",
+  "resourceGroupName": "rg-platform-prod-001",
   "tags": {
     "Environment": "Production",
     "Department": "Platform",

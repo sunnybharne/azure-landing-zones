@@ -111,6 +111,7 @@ stages:
               subscriptionId=$(jq -r '.subscriptionId' "$file")
               location=$(jq -r '.location' "$file")
               resourceGroupName=$(jq -r '.resourceGroupName' "$file")
+              vnetName=$(jq -r '.vnetNameName' "$file")
               tags=$(jq -r '.tags' "$file")
 
               terraform init \
@@ -124,9 +125,12 @@ stages:
 
               sleep 30
 
-              # terraform force-unlock -force 77a97288-dbb5-4611-88c7-d80a0eb30743
+              # terraform force-unlock -force 022dbaae-12c1-db59-fbae-3987572cb3a3
 
-              terraform plan -out="tfplan-$(basename "$file" .json)" -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags"
+              # terraform import azurerm_resource_group.core-rg /subscriptions/e8d0f9e9-2ea9-4973-99d6-f464cdb35bf3/resourceGroups/rg-platform-eus-prod-001
+
+              terraform plan -out="tfplan-$(basename "$file" .json)" -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags" -var="vnetName=$vnetName"
+
             done
 
         workingDirectory: '$(System.DefaultWorkingDirectory)'
@@ -237,7 +241,7 @@ stages:
 
               sleep 30
 
-              terraform apply -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags" -auto-approve
+              terraform apply -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags" -var="vnetName=$vnetName" -auto-approve
             done
 
         workingDirectory: '$(System.DefaultWorkingDirectory)'

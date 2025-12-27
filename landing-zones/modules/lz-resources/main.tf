@@ -36,6 +36,11 @@ variable "resourceGroupName" {
   type        = string
 }
 
+variable "vnetName" {
+  description = "The name of the vnet."
+  type        = string
+}
+
 variable "location" {
   description = "The Azure region where resources will be created."
   type        = string
@@ -46,8 +51,17 @@ variable "tags" {
   type        = map(string)
 }
 
-resource "azurerm_resource_group" "rg" {
+resource "azurerm_resource_group" "core_rg" {
   name     = var.resourceGroupName
   location = var.location
   tags     = var.tags
+}
+
+resource "azurerm_virtual_network" "core_vnet" {
+  name                = var.vnetName
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core_rg.name
+  address_space       = ["10.0.0.0/16"]
+  # dns_servers         = ["10.0.0.4"]
+  #
 }

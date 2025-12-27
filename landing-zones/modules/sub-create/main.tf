@@ -36,11 +36,11 @@ locals {
 }
 
 module "subscription" {
-  source                             = "./module"
-  for_each                           = local.files_maps
-  alias                              = each.value.name
-  subscription_id                    = each.value.subscriptionId
-  workload                           = each.value.workload
+  source          = "./module"
+  for_each        = local.files_maps
+  alias           = each.value.name
+  subscription_id = each.value.subscriptionId
+  # workload                           = each.value.workload
   tags                               = each.value.tags
   management_group_id                = each.value.managementGroupId
   budget_amount                      = each.value.budgetAmount

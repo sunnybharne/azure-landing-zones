@@ -8,10 +8,10 @@ variable "subscription_id" {
   type        = string
 }
 
-variable "workload" {
-  description = "The workload type for the subscription."
-  type        = string
-}
+# variable "workload" {
+#   description = "The workload type for the subscription."
+#   type        = string
+# }
 
 variable "tags" {
   description = "Tags to apply to the subscription."

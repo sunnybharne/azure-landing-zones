@@ -122,13 +122,10 @@ stages:
               echo "Subscription ID from file: $subscriptionId"
               az account set --subscription $subscriptionId
 
-
               sleep 30
 
-              # terraform force-unlock -force 8eadec9d-91f2-eef5-57d6-aad1d7b92322
-              terraform import 'module.subscription["alias-../../plb/platform-lz/plb-platform-prod-001.tfvar.json"].azurerm_subscription.subscription' '/providers/Microsoft.Subscription/aliases/plb-platform-prod-001'
-              
-                
+              # terraform force-unlock -force 77a97288-dbb5-4611-88c7-d80a0eb30743
+
               terraform plan -out="tfplan-$(basename "$file" .json)" -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags"
             done
 
@@ -240,7 +237,7 @@ stages:
 
               sleep 30
 
-              terraform apply -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags"
+              terraform apply -var="location=$location" -var="resourceGroupName=$resourceGroupName" -var="tags=$tags" -auto-approve
             done
 
         workingDirectory: '$(System.DefaultWorkingDirectory)'

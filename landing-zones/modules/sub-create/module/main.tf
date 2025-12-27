@@ -2,8 +2,8 @@ resource "azurerm_subscription" "subscription" {
   alias             = var.alias
   subscription_name = var.alias
   subscription_id   = var.subscription_id
-  workload          = var.workload
-  tags              = var.tags
+  # workload          = var.workload
+  tags = var.tags
 }
 
 resource "azurerm_management_group_subscription_association" "mg" {

@@ -1,0 +1,50 @@
+# Azure automation
+
+- Azure automation basics
+    - Process Automation - Run time consuming cloud management tasks
+    - Azure automation state configuration - This allows you to write, manage and compile windows powershell DSC, Import DSC resources and assign configurations to target nodes all in the cloud.
+    - Azure update manager - Manage operating system updates for windows and linux computers in azure, on-premises or other could providers. Create scheduled deployments for update installations for maintenance.
+    - Integration with Git repositories of any kind - Supports all types of git repositories.
+    - Automate aws resources - Automate common tasks in aws using automation runbook in azure.
+    - Manage shared resources - There are many shared resources like credentials , connection strings, modules, schedules and variables which makes it easy to automate and configure the automation tasks.
+    - Run Backups - Run regular backups of non-database systems such as backing up azure blob storage at certain intervals.
+- Automation account - Just like storage account like a container for runbooks
+- Runbook - its a repository for your custom scripts and workflows.
+    - This also contain shared resources like credentials, variables, schedules and connection strings. 
+    - Runbooks can have another runbooks to create complex workflows.
+    - You can invoke runbook on-demand or according to schedule.
+    - You can work directly with powershell code
+- Graphical runbook editor
+    - Graphical way of writing powershell code
+    - You can move what ever you make in the Graphical editor to another automation account. But then this cant be edited by any other tool.
+    - You can not convert the graphical runbook to the powershell code.
+        - Powershell runbook
+        - Powershell workflow runbook
+            - Parallel execution of multiple tasks
+            - This takes longer to start as this needs to complie the workflow before running.
+            - Python runbook
+                - Write python code in the runbook editor directly. 
+                - To use the python lybraries, you need to import the python packages in the automation account if you are planning to use third party libraries.
+- Shared resources
+    - There are currently 8 shared resources categories.
+      - Schedules: This allows you to define a one-off or recurring schedule.
+      - Modules: Contains azure powershell modules.
+      - Modules gallery: This allows you to identify and import ps modules from a gallery.
+      - Python packages: allows you to import python packages by uploading .whl or tar.gz files.
+      - Credentials: Allows you to create username and passwords.
+      - Connections: Allows you to specify azure/azure classic certificate/azure service principal connections.
+      - Certificates: This allows you to upload certificates in .cer or pfx format.
+      - Variables: Allows you to define enycripted and unencrypted variables for type. String, boolean, dateTime, integer , no specific type.
+- Runbook Gallery
+    - There are many runbook created by MS and MS community.
+    - Those premade runbooks can be used as is or with some modifications.
+    - Those Can also be imported from the runbook gallery house on ms github runbook repository.
+- Runbook can be triggered by either a trigger(Webhook) or a schedule
+- Creating webhook
+    - Create webhook inside the runbook and copy the url.
+- Source control Integration
+    - Github
+    - Azure devops repos
+    - Azure devops TFVS
+- Powershell Workflows
+    - 

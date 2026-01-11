@@ -21,6 +21,8 @@ Link: [https://learn.microsoft.com/en-us/training/career-paths/administrator](ht
 ## AI Engineer
 
 ## Developer
+- Console.Write("Hello World"); // printf
+- Console.WriteLine("Hello World"); // printf + /n
 
 ## Identity and Access Administrator
 

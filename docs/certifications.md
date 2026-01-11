@@ -1,6 +1,7 @@
 # Certifications
 
-MS learn: https://learn.microsoft.com/en-us/training/career-paths/devops-engineer
+MS learn: https://learn.microsoft.com/en-us/
+Career Path: https://learn.microsoft.com/en-us/training/career-paths/
 
 ## Administrator
 ## AI Engineer

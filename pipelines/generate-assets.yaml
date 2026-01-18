@@ -1,0 +1,82 @@
+pool: "default"
+
+steps:
+  - checkout: self
+    persistCredentials: true
+    
+  - pwsh: |
+      # Check if drawio CLI is installed, install if not
+      if (-not (Get-Command drawio -ErrorAction SilentlyContinue)) {
+          Write-Host "Installing draw.io CLI..."
+          npm install -g @drawio/cli
+      }
+      
+      $drawio_files = Get-ChildItem -Path assets -Filter "*.drawio" -Recurse -File
+      foreach ($file in $drawio_files) {
+          $xml = [xml](Get-Content $file.FullName)
+          $tabCount = ($xml.mxfile.diagram).Count
+          Write-Host "$($file.Name): $tabCount tabs"
+          
+          $diagramIndex = 0
+          foreach ($diagram in $xml.mxfile.diagram) {
+              $tabName = $diagram.name
+              Write-Host "  - $tabName"
+              
+              # Export diagram as SVG to the same folder as the drawio file (assets folder)
+              $outputPath = Join-Path $file.DirectoryName "$tabName.svg"
+              $pageIndex = $diagramIndex
+              
+              Write-Host "    Exporting to: $outputPath"
+              drawio -x -f svg -o $outputPath -p $pageIndex $file.FullName
+              
+              if (Test-Path $outputPath) {
+                  Write-Host "    ✓ Successfully exported to assets folder"
+              } else {
+                  Write-Host "    ✗ Export failed"
+              }
+              
+              $diagramIndex++
+          }
+      }
+      
+      # Commit and push generated SVG files back to repo
+      Write-Host "`nCommitting and pushing generated SVG files..."
+      
+      # Configure git if needed
+      git config user.name "Azure DevOps Pipeline"
+      git config user.email "azuredevops@noreply.com"
+      
+      # Get all generated SVG files from assets folder only
+      $repoRoot = git rev-parse --show-toplevel
+      Set-Location $repoRoot
+      
+      $svgFiles = Get-ChildItem -Path assets -Filter "*.svg" -Recurse -File | Where-Object { $_.LastWriteTime -gt (Get-Date).AddMinutes(-5) }
+      
+      if ($svgFiles.Count -gt 0) {
+          Write-Host "Found $($svgFiles.Count) generated SVG file(s) to commit in assets folder"
+          
+          # Add all generated SVG files using relative paths from repo root
+          foreach ($svgFile in $svgFiles) {
+              $relativePath = $svgFile.FullName.Replace("$repoRoot\", "").Replace("$repoRoot/", "")
+              git add $relativePath
+              Write-Host "  Added: $relativePath"
+          }
+          
+          # Check if there are changes to commit
+          $status = git status --porcelain
+          if ($status) {
+              git commit -m "Auto-generated SVG files from drawio diagrams"
+              Write-Host "`nCommitted changes"
+              
+              # Push to repository
+              $branchName = git rev-parse --abbrev-ref HEAD
+              git push origin $branchName
+              Write-Host "Pushed changes to repository (branch: $branchName)"
+          } else {
+              Write-Host "No changes to commit"
+          }
+      } else {
+          Write-Host "No new SVG files to commit"
+      }
+      
+      exit

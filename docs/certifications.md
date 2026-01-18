@@ -26,15 +26,20 @@ Link : https://learn.microsoft.com/en-us/plans/qpw7uqt4x85g0p?source=docs&ref=pr
 FreeCodeCamp c# Link : https://www.freecodecamp.org/learn/foundational-c-sharp-with-microsoft/
 
 ### Part 1 (Write your first c# code)
-
-```mermaid
-graph TD
-    A[C#] --> B[Console.Write("Hello World");]
-    A[C#] --> C[Console.WriteLine("Hello World");]
+#### Basics
+```c#
+  Console.Write("Hello World");
+  Console // Class
+  . // Member Access Operator
+  WriteLine // Method
+  () // Method Invocation Operator
+```
+#### Print
+```c#
+  Console.Write("Hello World"); // printf
+  Console.WriteLine("Hello World"); // printf + /n
 ```
 
-- Console.Write("Hello World"); // printf
-- Console.WriteLine("Hello World"); // printf + /n
 ### Part 2 (Store and retrieve data using literal and variable values in C#)
 ### Part 3
 ### Part 4
